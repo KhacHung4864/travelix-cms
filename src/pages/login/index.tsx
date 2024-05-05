@@ -1,4 +1,4 @@
-import { LoadingOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Button, Form, Input, notification } from "antd";
 import classNames from "classnames/bind";
@@ -6,11 +6,9 @@ import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppConfig from "../../common/config";
-import { authState, requestGetUserFromToken, requestLogin } from "../../redux/authSlice";
+import { authState, requestLogin } from "../../redux/authSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
-import { encrypt } from "../../utils/crypto";
 import styles from "./login.module.scss";
-import Loading from "../../components/loading";
 
 const cx = classNames.bind(styles);
 
@@ -25,11 +23,13 @@ const LoginPages = () => {
 
   const checkLogin = async () => {
     const cookie = Cookies.get("tokenAdmin");
+    console.log({cookie});
+    
     try {
-      const result = await dispatch(requestGetUserFromToken({ token: cookie || "" }));
-      const data = unwrapResult(result);
-
-      if (data.userInfo?.id) {
+      // const result = await dispatch(requestGetUserFromToken({ token: cookie || "" }));
+      // const data = unwrapResult(result);
+      // if (data.userInfo?.id) {
+      if (cookie) {
         navigate("/");
       }
     } catch (error) {
@@ -52,27 +52,29 @@ const LoginPages = () => {
       );
 
       const res = unwrapResult(actionResult);
-      switch (res.loginCode) {
-        case AppConfig.LOGIN_FAILED:
-          return notification.error({
-            message: "Đăng nhập thất bại",
-            duration: 1.5,
-          });
+      console.log(res);
+      
+      switch (res.code) {
+        // case AppConfig.LOGIN_FAILED:
+        //   return notification.error({
+        //     message: "Đăng nhập thất bại",
+        //     duration: 1.5,
+        //   });
 
-        case AppConfig.LOGIN_ACCOUNT_NOT_EXIST:
-          return notification.warning({
-            message: "Tài khoản hoặc mật khẩu không đúng",
-            duration: 1.5,
-          });
+        // case AppConfig.LOGIN_ACCOUNT_NOT_EXIST:
+        //   return notification.warning({
+        //     message: "Tài khoản hoặc mật khẩu không đúng",
+        //     duration: 1.5,
+        //   });
 
-        case AppConfig.LOGIN_WRONG_PASSWORD:
-          return notification.warning({
-            message: "Tài khoản hoặc mật khẩu không đúng",
-            duration: 1.5,
-          });
+        // case AppConfig.LOGIN_WRONG_PASSWORD:
+        //   return notification.warning({
+        //     message: "Tài khoản hoặc mật khẩu không đúng",
+        //     duration: 1.5,
+        //   });
 
         case AppConfig.LOGIN_SUCCESS:
-          Cookies.set("tokenAdmin", res.token, {
+          Cookies.set("tokenAdmin", res.data.access_token, {
             expires: 60 * 60 * 24 * 30,
           });
           navigate("/");
@@ -92,9 +94,9 @@ const LoginPages = () => {
   return (
     <>
       <div className={cx("login__over")}>
-        {authStates.loadingCheckLogin ? (
+        {/* {authStates.loadingCheckLogin ? (
           <Loading />
-        ) : (
+        ) : ( */}
           <div className={cx("login__wrapper")}>
             <h2 className={cx("login__title")}>Đăng Nhập</h2>
             <Form
@@ -160,7 +162,7 @@ const LoginPages = () => {
               </Form.Item>
             </Form>
           </div>
-        )}
+        {/* )} */}
       </div>
     </>
   );

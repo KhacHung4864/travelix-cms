@@ -13,34 +13,33 @@ const getBase64 = (file: RcFile): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-const UploadImg = ({
-  defaultUrl,
-  onChangeUrl,
+const UploadMultiImg = ({
+  defaultUrls,
+  onChangeUrls,
 }: {
-  defaultUrl?: string | null;
-  onChangeUrl: (value: string) => void;
+  defaultUrls?: string[] | null;
+  onChangeUrls: (values: string[]) => void;
 }) => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<any[]>([]);
 
   useEffect(() => {
-    if (defaultUrl) {
-      setFileList([
-        {
-          uid: "-1",
-          name: "default.png",
-          status: "done",
-          url: defaultUrl,
-        },
-      ]);
-      onChangeUrl(defaultUrl);
+    if (defaultUrls && defaultUrls.length > 0) {
+      const files = defaultUrls.map((url, index) => ({
+        uid: `${index}`,
+        name: `image_${index}.png`,
+        status: "done",
+        url: url,
+      }));
+      setFileList(files);
+      onChangeUrls(defaultUrls);
     } else {
       setFileList([]);
-      onChangeUrl("");
+      onChangeUrls([]);
     }
-  }, [defaultUrl]);
+  }, [defaultUrls]);
 
   const handleCancel = () => setPreviewOpen(false);
 
@@ -58,7 +57,7 @@ const UploadImg = ({
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
-    onChangeUrl(newFileList?.[0]?.response ?? "");
+    onChangeUrls(newFileList.map((file) => file.response));
   };
 
   const uploadButton = (
@@ -71,6 +70,7 @@ const UploadImg = ({
   return (
     <>
       <Upload
+        multiple
         customRequest={async (options) => {
           const { onSuccess = () => {}, onError = () => {}, file } = options;
           try {
@@ -82,28 +82,26 @@ const UploadImg = ({
         }}
         listType="picture-card"
         fileList={fileList}
-        maxCount={10}
+        // maxCount={100}
         onPreview={handlePreview}
         onChange={handleChange}
         beforeUpload={(file) => {
           const isJpgOrPng =
             file.type === "image/jpeg" || file.type === "image/png";
           if (!isJpgOrPng) {
-            message.error("You can only upload JPG/PNG file!");
+            message.error("You can only upload JPG/PNG files!");
+            return false;
           }
           const isLt2M = file.size / 1024 / 1024 < 2;
           if (!isLt2M) {
-            message.error("Image must smaller than 2MB!");
-          }
-
-          if (isJpgOrPng && isLt2M) {
-            return true;
-          } else {
+            message.error("Image must be smaller than 2MB!");
             return false;
           }
+          return true;
         }}
         accept="image/*"
       >
+        {/* {fileList.length >= 10 ? null : uploadButton} */}
         {uploadButton}
       </Upload>
       <Modal
@@ -118,4 +116,4 @@ const UploadImg = ({
   );
 };
 
-export default UploadImg;
+export default UploadMultiImg;

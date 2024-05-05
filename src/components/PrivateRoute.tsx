@@ -1,18 +1,15 @@
-import { LoadingOutlined } from '@ant-design/icons';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { notification } from 'antd';
 import Cookies from 'js-cookie';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { apiGetUserFromToken } from '../api/auth'
-import { authState, requestGetUserFromToken } from '../redux/authSlice';
+import { authState } from '../redux/authSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hook';
-import { UserInfo } from '../models/user';
-import Loading from './loading';
 
 const PrivateRoute = () => {
     const dispatch = useAppDispatch()
     const authStates = useAppSelector(authState)
+    const [cookies, setCookies] = useState<any>()
+    const cookie = Cookies.get("tokenAdmin");
     
     useLayoutEffect(() => {
         if(!authStates.userInfo?.id)
@@ -21,11 +18,12 @@ const PrivateRoute = () => {
 
     const checkLogin = async () => {
         const cookie = Cookies.get("tokenAdmin");
+        setCookies(cookie);
         try {
-            const result = await dispatch(
-                requestGetUserFromToken({ token: cookie || "" })
-            );
-            unwrapResult(result);
+            // const result = await dispatch(
+            //     requestGetUserFromToken({ token: cookie || "" })
+            // );
+            // unwrapResult(result);
         } catch (error) {
             if (cookie)
                 notification.error({
@@ -36,11 +34,12 @@ const PrivateRoute = () => {
 
     // If authorized, return an outlet that will render child elements
     // If not, return element that will navigate to login page
-    return authStates.loadingCheckLogin ? (
-        <Loading />
-    ): (
-        authStates.userInfo?.id ? <Outlet /> : <Navigate to="/dang-nhap" />
-    );
+    // return authStates.loadingCheckLogin ? (
+    //     <Loading />
+    // ): (
+    //     authStates.userInfo?.id ? <Outlet /> : <Navigate to="/dang-nhap" />
+    // );
+    return cookie ? <Outlet /> : <Navigate to="/dang-nhap" />
 }
 
 export default PrivateRoute

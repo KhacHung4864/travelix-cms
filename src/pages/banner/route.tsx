@@ -1,9 +1,9 @@
-import { FaFilm } from "react-icons/fa";
 import { lazy } from "react";
+import { FaFilm } from "react-icons/fa";
 
 const route = {
-  path: "/films",
-  label: "Phim",
+  path: "/banner",
+  label: "Banner",
   icon: <FaFilm />,
   exact: true,
   public: true,

@@ -6,7 +6,6 @@ export const ENDPOINT_LOCAL = process.env.REACT_APP_ENDPOINT;
 
 const axiosInstance = axios.create();
 axiosInstance.defaults.baseURL = `${ENDPOINT_LOCAL}/${PREFIX_API}`;
-axiosInstance.defaults.withCredentials = true;
 axiosInstance.defaults.timeout = 20000;
 axiosInstance.defaults.headers["Content-Type"] = "application/json";
 
@@ -33,6 +32,8 @@ export const ApiConfig = async (
   };
   if (apiPrefix !== PREFIX_API)
     config.baseURL = `${ENDPOINT_LOCAL}/${apiPrefix}`;
+    // config.baseURL = `https://go-server-ikbn.onrender.com/api/`;
+
   //  if (method === 'post') {
   //     return axiosInstance.post(`${url}`, payload, config)
   //         .then(response => {

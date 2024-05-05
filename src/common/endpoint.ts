@@ -1,8 +1,13 @@
 export default class ENDPONTAPI {
-  static LOGIN = '/login';
+  static LOGIN = '/auth/login';
   static REGISTER = '/register';
   static LOGOUT = '/logout';
 
+  //banner
+  static BANNER = '/banner/';
+  static PLACE = '/place/';
+  static CATEGORY = '/category/';
+  
   //film
   static UPDATE_FILM = '/film/update-film';
   static GET_ALL_FILM = '/film/get-all-film';

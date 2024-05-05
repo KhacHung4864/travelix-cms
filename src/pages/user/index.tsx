@@ -1,18 +1,14 @@
-import { Button, Col, DatePicker, Form, Image, Input, Modal, Popconfirm, Row, Select, Space, Tag, Tooltip, Typography, notification } from "antd";
+import { DeleteOutlined, EyeOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { Button, Col, Form, Image, Input, Modal, Popconfirm, Row, Select, Space, Tag, Tooltip, Typography, notification } from "antd";
 import { useForm } from "antd/es/form/Form";
-import UploadImg from "../../components/UploadImg";
-import { useState, useEffect } from "react";
-import { Film } from "../../models/film";
-import { DeleteOutlined, EditOutlined, EyeOutlined, LockOutlined, SettingOutlined, UnlockOutlined } from "@ant-design/icons";
 import Table, { ColumnsType } from "antd/es/table";
 import classNames from "classnames/bind";
-import styles from "./users.module.scss";
-import { useAppDispatch, useAppSelector } from "../../redux/hook";
-import { unwrapResult } from "@reduxjs/toolkit";
-import AppConfig from "../../common/config";
-import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserInfo } from "../../models/user";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import styles from "./users.module.scss";
 import { requestGetAllUser, requestUpdateUser, userState } from "./usersSlide";
 
 const cx = classNames.bind(styles);
