@@ -9,6 +9,7 @@ class Place {
   images: string[];
   price: number;
   rate: string;
+  categories: [any];
   created_at: string;
   updated_at: string;
   deleted_at: string;
@@ -24,6 +25,7 @@ class Place {
     this.longitude = args?.longitude ?? 0;
     this.description = args?.description ?? '';
     this.images = args?.images ?? [];
+    this.categories = args?.categories ?? [];
     this.price = args?.price ?? 0;
     this.rate = args?.rate ?? 5;
     this.created_at = args?.created_at ?? '';

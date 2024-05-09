@@ -17,6 +17,6 @@ export const apiDeletePlace = async (id: any) => {
   return ApiConfig(ENDPONTAPI.PLACE + `${id}`, {}, 'DELETE');
 };
 
-export const apiGetPlace = async () => {
-  return ApiConfig(ENDPONTAPI.PLACE, {}, 'GET');
+export const apiGetPlace = async (params: any) => {
+  return ApiConfig(ENDPONTAPI.PLACE, {params}, 'GET');
 };

@@ -23,8 +23,8 @@ export const requestCreatePlace = createAsyncThunk('place/requestCreatePlace', a
   return res.data
 })
 
-export const requestGetPlace = createAsyncThunk('place/requestGetPlace', async () => {
-  const res = await apiGetPlace();
+export const requestGetPlace = createAsyncThunk('place/requestGetPlace', async (props: any) => {
+  const res = await apiGetPlace(props);
   return res.data
 })
 
@@ -33,7 +33,7 @@ export const placeSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    const actionList = [requestCreatePlace];
+    const actionList = [requestGetPlace];
     actionList.forEach(action => {
       builder.addCase(action.pending, (state) => {
         state.loading = true;
