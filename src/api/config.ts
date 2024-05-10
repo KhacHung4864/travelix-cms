@@ -9,10 +9,14 @@ axiosInstance.defaults.baseURL = `${ENDPOINT_LOCAL}/${PREFIX_API}`;
 axiosInstance.defaults.timeout = 20000;
 axiosInstance.defaults.headers["Content-Type"] = "application/json";
 
-const accessToken = Cookies.get("tokenAdmin");
-if (accessToken) {
-  axiosInstance.defaults.headers["Authorization"] = `Bearer ${accessToken}`;
-}
+axiosInstance.interceptors.request.use((config: any) => {
+  const accessToken = Cookies.get("tokenAdmin");
+  config.headers = config.headers || {}
+  if (accessToken) {
+    config.headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+  return config;
+})
 
 export const ApiConfig = async (
   url: string,

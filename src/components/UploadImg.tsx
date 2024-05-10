@@ -82,7 +82,7 @@ const UploadImg = ({
         }}
         listType="picture-card"
         fileList={fileList}
-        maxCount={10}
+        maxCount={1}
         onPreview={handlePreview}
         onChange={handleChange}
         beforeUpload={(file) => {
