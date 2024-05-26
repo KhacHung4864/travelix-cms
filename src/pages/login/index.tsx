@@ -82,6 +82,12 @@ const LoginPages = () => {
             message: "Đăng nhập thành công",
             duration: 1.5,
           });
+        default: 
+          notification.error({
+            message: "Đăng nhập thành bại " + res?.error?.error_details,
+            duration: 1.5,
+          });
+          break;
       }
     } catch (err) {
       return notification.error({
