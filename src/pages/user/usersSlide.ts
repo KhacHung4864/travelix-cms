@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../redux/store";
 import { UserInfo } from "../../models/user";
-import { apiDeleteUser, apiGetAllUser, apiUpdateUser } from "../../api/userApi";
+import { apiGetAllUser, apiUpdateUser } from "../../api/userApi";
 
 interface UserState {
   users: UserInfo[],
@@ -20,8 +20,8 @@ const initialState: UserState = {
   total: 0
 };
 
-export const requestGetAllUser = createAsyncThunk('user/getAllUser', async () => {
-  const res = await apiGetAllUser();
+export const requestGetAllUser = createAsyncThunk('user/getAllUser', async (props: any) => {
+  const res = await apiGetAllUser(props);
   return res.data
 })
 
@@ -30,17 +30,12 @@ export const requestUpdateUser = createAsyncThunk('user/updateUser', async (prop
   return res.data
 })
 
-export const requestDeleteUser = createAsyncThunk('user/deleteUser', async (userId: any) => {
-  const res = await apiDeleteUser({userId});
-  return res.data
-})
-
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    const actionList: any[] = [requestGetAllUser, requestUpdateUser, requestDeleteUser];
+    const actionList: any[] = [requestGetAllUser, requestUpdateUser];
     actionList.forEach(action => {
       builder.addCase(action.pending, (state) => {
         state.loading = true;
@@ -53,11 +48,16 @@ export const userSlice = createSlice({
     })
 
     builder.addCase(requestGetAllUser.fulfilled, (state, action: PayloadAction<{
-      data: UserInfo[],
-      status: number
+      data: {
+        total_record: number,
+        users: UserInfo[]
+      },
+      code: number,
+      message: String
     }>) => {
       state.loading = false;
-      state.users = action.payload.data.map((o) => new UserInfo(o));
+      state.users = action.payload.data.users.map((o) => new UserInfo(o));
+      state.total = action.payload.data.total_record;
     })
 
     builder.addCase(requestUpdateUser.fulfilled, (state, action: PayloadAction<{
@@ -66,13 +66,6 @@ export const userSlice = createSlice({
     }>) => {
       state.loading = false;
       state.usersInfo = action.payload.data;
-    })
-
-    builder.addCase(requestDeleteUser.fulfilled, (state, action: PayloadAction<{
-      data: UserInfo,
-      status: number
-    }>) => {
-      state.loading = false;
     })
   },
 });

@@ -19,7 +19,7 @@ const initialState: UserState = {
 
 export const requestLogin = createAsyncThunk(
   "auth/login",
-  async (props: { email: string; password: string, userRole: number }) => {
+  async (props: { email: string; password: string }) => {
     const res = await apiLogin(props);
     return res.data;
   }

@@ -46,8 +46,7 @@ const LoginPages = () => {
       const actionResult = await dispatch(
         requestLogin({
           email: data.email,
-          password: data.password,
-          userRole: AppConfig.ROLE_ADMIN,
+          password: data.password
         })
       );
 

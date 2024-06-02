@@ -2,50 +2,37 @@ import AppConfig from '../common/config';
 
 class UserInfo {
   id?: string;
-  // account: string;
+  username: string;
   password: string;
-  name: string;
   email: string;
-  loginCode?: number;
-  phoneNumber?: string;
   avatar?: string;
-  googleId?: string;
-  address?: string;
-  birth?: string;
+  active?: number;
+  birthDay?: number;
   gender?: number;
-  registerDate?: number;
-  token?: string;
-  lastLogin?: number;
-  status?: number;
-  userRole?: number;
-  passwordChangeAt: number;
-  passwordResetToken: string;
-  passwordResetExpires: number;
+  isAdmin?: number;
+  contact?: string;
+  createdAt?: number;
+  updatedAt?: number;
+  deletedAt?: number;
+  Trips?: number;
 
   constructor(args?: any) {
     if (!args) {
       args = {};
     }
     this.id = args?._id ?? args.id ?? undefined;
-    // this.account = args.account ?? '';
-    this.name = args.name ?? '';
-    this.avatar = args.avatar ?? '';
-    this.loginCode = args.loginCode ?? AppConfig.LOGIN_SUCCESS;
-    this.email = args.email ?? '';
-    this.phoneNumber = args.phoneNumber ?? '';
+    this.username = args.username ?? '';
     this.password = args.password ?? '';
-    this.address = args.address ?? '';
-    this.googleId = args.googleId ?? '';
-    this.birth = args.birth ?? 0;
-    this.gender = args.gender ?? AppConfig.GENDER_OTHER;
-    this.registerDate = args.registerDate ?? 0;
-    this.token = args.token ?? '';
-    this.lastLogin = args.lastLogin ?? Date.now();
-    this.status = args.status ?? 1;
-    this.userRole = args?.userRole ?? AppConfig.ROLE_USER;
-    this.passwordChangeAt = args?.passwordChangeAt ?? Date.now();
-    this.passwordResetToken = args?.passwordResetToken ?? '';
-    this.passwordResetExpires = args?.passwordResetExpires ?? 0;
+    this.email = args.email ?? '';
+    this.avatar = args.avatar ?? '';
+    this.active = args.active ?? 0;
+    this.birthDay = args.birth_day ?? 0;
+    this.gender = args.gender ?? 0;
+    this.isAdmin = args.is_admin ?? 0;
+    this.contact = args.contact ?? '';
+    this.createdAt = args?.created_at ?? 0;
+    this.updatedAt = args?.updated_at ?? 0;
+    this.deletedAt = args?.deleted_at ?? 0;
   }
 }
 

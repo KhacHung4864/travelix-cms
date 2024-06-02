@@ -1,6 +1,6 @@
-import { DeleteOutlined, EyeOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
+import { EyeOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { Button, Col, Form, Image, Input, Modal, Popconfirm, Row, Select, Space, Tag, Tooltip, Typography, notification } from "antd";
+import { Button, Col, Form, Image, Input, Modal, Pagination, Popconfirm, Row, Select, Space, Tag, Tooltip, Typography, notification } from "antd";
 import { useForm } from "antd/es/form/Form";
 import Table, { ColumnsType } from "antd/es/table";
 import classNames from "classnames/bind";
@@ -10,37 +10,38 @@ import { UserInfo } from "../../models/user";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import styles from "./users.module.scss";
 import { requestGetAllUser, requestUpdateUser, userState } from "./usersSlide";
+import moment from "moment";
+import { PaginationProps } from "antd/lib/pagination";
 
 const cx = classNames.bind(styles);
 
 interface DataType {
   key: string;
-  name: string;
+  username: string;
   avatar: string | undefined;
   email: string;
-  status: number | undefined;
-  phoneNumber: string | undefined;
-  address: string | undefined;
+  active: number | undefined;
+  contact: string | undefined;
+  birthDay: number | undefined;
   gender: number | undefined;
+  createdAt: number | undefined,
+  updatedAt: number | undefined,
+  deletedAt: number | undefined,
   value: UserInfo;
 }
 
 export const userStatus = [
   {
-    value: 0,
+    value: true,
     label: "Active",
   },
   {
-    value: 1,
+    value: false,
     label: "InActive",
-  },
-  {
-    value: -1,
-    label: "DELETED",
-  },
+  }
 ];
 
-const Films = () => {
+const Users = () => {
   const [form] = useForm();
   const dispatch = useAppDispatch();
   const navigate = useNavigate()
@@ -48,22 +49,18 @@ const Films = () => {
   const userReducer = useAppSelector(userState)
   const users = userReducer.users;
   const loading = userReducer.loading;
+  const total = userReducer.total;
 
   const [dataUpload, setDataupload] = useState<string | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [datas, setDatas] = useState<DataType[]>([]);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [valueEdit, setValueEdit] = useState<UserInfo | undefined>();
-
-  const openCreateModal = () => {
-    setIsModalOpen(true);
-    setValueEdit(undefined);
-    setIsEdit(false);
-  };
-
+  const [status, setStatus] = useState<any>();
+  
   useEffect(() => {
-    loadAllUsers()
-  }, []);
+    loadAllUsers(1, 10, status)
+  }, [status]);
 
   useEffect(() => {
     setDatas(users?.map(o => convertDataToTable(o)))
@@ -71,40 +68,41 @@ const Films = () => {
 
   useEffect(() => {
     if (valueEdit) {
-      const { name, avatar, email, status, phoneNumber, address, gender } = valueEdit;
-      form.setFieldsValue({ name, avatar, email, status, phoneNumber, address, gender });
+      const { username, avatar, email, active, contact, birthDay, gender, createdAt, updatedAt, deletedAt } = valueEdit;
+      form.setFieldsValue({ 
+        username, avatar, email, active, contact, gender,
+        birthDay: moment.unix(birthDay || 0).format("DD/MM/YYYY HH:mm"),
+        createdAt: moment(createdAt).format("DD/MM/YYYY HH:mm"), 
+        updatedAt: moment(updatedAt).format("DD/MM/YYYY HH:mm")
+      });
     }
   }, [valueEdit]);
-
-  // const handleUpdateStateFilm = async () => {
-  //   try {
-  //     await apiUpdateStateFilm()
-  //   } catch (error) {
-  //     notification.error({
-  //       message: "cập nhật không thành công",
-  //       duration: 1.5,
-  //     });
-  //   }
-  // }
 
   const convertDataToTable = (value: UserInfo) => {
     return {
       key: `${value?.id || Math.random()}`,
-      name: value?.name,
+      username: value?.username,
       avatar: value?.avatar || "https://play-lh.googleusercontent.com/9N7f8PWb1zlDqOR4mepkNFkRt5SlrjFoLsg5jYtVhvq9LeQneLKyHg9eEx4BSgyl7F4",
       email: value?.email,
-      status: value?.status,
-      phoneNumber: value?.phoneNumber,
-      address: value?.address,
+      active: value?.active,
+      contact: value?.contact,
+      birthDay: value?.birthDay,
       gender: value?.gender,
+      createdAt: value?.createdAt,
+      updatedAt: value?.updatedAt,
+      deletedAt: value?.deletedAt,
       value: value,
     };
   };
 
-  const loadAllUsers = async () => {
+  const loadAllUsers = async (page: number = 1, per_page: number = 10, active: number = 1) => {
     try {
       const actionResult = await dispatch(
-        requestGetAllUser()
+        requestGetAllUser({
+          page,
+          per_page,
+          active
+        })
       );
       unwrapResult(actionResult);
     } catch (error) {
@@ -121,12 +119,12 @@ const Films = () => {
     form.resetFields();
   };
 
-  const handleUpdateStatusUser = async (userId: any, status: number) => {
+  const handleUpdateStatusUser = async (user_id: any, active: number) => {
     try {
       const data = await dispatch(
         requestUpdateUser({
-          userId,
-          status
+          user_id,
+          active
         })
       );
       unwrapResult(data);
@@ -144,37 +142,6 @@ const Films = () => {
   };
 
   const handleOk = () => {
-    // form.validateFields().then(async (value) => {
-    //   const {  } = value
-
-    //   const userInfo = {
-    //     ...value,
-    //   }
-
-    //   try {
-    //     const data = await dispatch(
-    //       requestUpdateUser({
-    //         id: valueEdit?.id,
-    //         ...valueEdit,
-    //         ...userInfo
-    //       })
-    //     );
-    //     unwrapResult(data);
-        
-    //     loadAllUsers();
-
-    //     notification.success({
-    //       message: "Cập nhật thành công",
-    //       duration: 1.5,
-    //     });
-    //   } catch (error) {
-    //     notification.error({
-    //       message: "cập nhật không được",
-    //       duration: 1.5,
-    //     });
-    //   }
-    //   handleCancel();
-    // }).catch(err => err)
   };
 
 
@@ -204,8 +171,8 @@ const Films = () => {
     },
     {
       title: "Tên",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "username",
+      key: "username",
       align: "center",
       render: (text) => <span>{text}</span>,
     },
@@ -218,23 +185,23 @@ const Films = () => {
     },
     {
       title: "Trạng thái",
-      key: "status",
-      dataIndex: "status",
+      key: "active",
+      dataIndex: "active",
       align: "center",
-      render: (text: number) => (
+      render: (text: boolean) => (
         <>
-          <Tag color={text === 0 ? "green" : "red"}>
-            {userStatus.find((o) => o.value === text)?.label}
+          <Tag color={text ? "green" : "red"}>
+            {text ? "Active" : "Inactive"}
           </Tag>
         </>
       ),
     },
     {
-      title: "Địa chỉ",
-      key: "address",
-      dataIndex: "address",
+      title: "Ngày sinh",
+      key: "birthDay",
+      dataIndex: "birthDay",
       align: "center",
-      render: (text) => <span>{text}</span>,
+      render: (text) => <span>{moment.unix(text).format("DD/MM/YYYY HH:mm")}</span>,
     },
     {
       title: "Giới tính",
@@ -249,85 +216,95 @@ const Films = () => {
     },
     {
       title: "Số điện thoại",
-      key: "phoneNumber",
-      dataIndex: "phoneNumber",
+      key: "contact",
+      dataIndex: "contact",
       align: "center",
       render: (text) => <span>{text}</span>,
+    },
+    {
+      title: "Ngày tạo",
+      key: "createdAt",
+      dataIndex: "createdAt",
+      align: "center",
+      render: (text) => <span>{moment(text).format("DD/MM/YYYY HH:mm")}</span>,
+    },
+    {
+      title: "Ngày cập nhật",
+      key: "updatedAt",
+      dataIndex: "updatedAt",
+      align: "center",
+      render: (text) => <span>{moment(text).format("DD/MM/YYYY HH:mm")}</span>,
     },
     {
       title: "Hành động",
       key: "action",
       dataIndex: "value",
       align: "center",
+      // fixed: 'right',
+      // width: 150,
       render: (text: UserInfo, record) => (
         <Space size="middle" direction="vertical">
           <Space size="middle">
-            <Tooltip placement="top" title="Chỉnh sửa">
-              <Button
+            {
+              text.active
+              ? 
+                <Popconfirm
+                  placement="topRight"
+                  title="Bạn có chắc bạn muốn KHÓA tài khoản này?"
+                  onConfirm={() => {
+                    handleUpdateStatusUser(text.id, 2);
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Tooltip placement="top" title="Khóa">
+                    <Button>
+                      <LockOutlined />
+                    </Button>
+                  </Tooltip>
+                </Popconfirm>
+              :
+                <Popconfirm
+                  placement="topRight"
+                  title="Bạn có chắc bạn muốn MỞ KHÓA tài khoản này không?"
+                  onConfirm={() => {
+                    handleUpdateStatusUser(text.id, 1);
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Tooltip placement="top" title="Mở">
+                    <Button>
+                      <UnlockOutlined />
+                    </Button>
+                  </Tooltip>
+                </Popconfirm> 
+            }
+            <Tooltip placement="top" title="Chi tiết">
+              <Button 
                 onClick={() => {
                   setIsModalOpen(true);
                   setValueEdit(text);
-                  setIsEdit(true);
                 }}
               >
                 <EyeOutlined />
               </Button>
             </Tooltip>
-            <Popconfirm
-              placement="topRight"
-              title="Bạn có chắc bạn muốn xóa mục này không?"
-              onConfirm={() => {
-                // handleDelete(text);
-                handleUpdateStatusUser(text.id, -1);
-              }}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Tooltip placement="top" title="Xóa">
-                <Button>
-                  <DeleteOutlined />
-                </Button>
-              </Tooltip>
-            </Popconfirm>
-          </Space>
-
-          <Space size="middle">
-            <Popconfirm
-              placement="topRight"
-              title="Bạn có chắc bạn muốn MỞ KHÓA tài khoản này không?"
-              onConfirm={() => {
-                handleUpdateStatusUser(text.id, 0);
-              }}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Tooltip placement="top" title="Mở">
-                <Button>
-                  <UnlockOutlined />
-                </Button>
-              </Tooltip>
-            </Popconfirm>
-          
-            <Popconfirm
-              placement="topRight"
-              title="Bạn có chắc bạn muốn KHÓA tài khoản này?"
-              onConfirm={() => {
-                handleUpdateStatusUser(text.id, 1);
-              }}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Tooltip placement="top" title="Khóa">
-                <Button>
-                  <LockOutlined />
-                </Button>
-              </Tooltip>
-            </Popconfirm>
           </Space>
         </Space>
       ),
     },
   ];
+
+  const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
+    console.log(current, pageSize);
+    loadAllUsers(1, pageSize, status);
+  };
+
+  const onChange: PaginationProps['onChange'] = (page, pageSize) => {
+    console.log(page, pageSize);
+    loadAllUsers(page, pageSize, status);
+  }
 
   return (
     <div>
@@ -337,13 +314,23 @@ const Films = () => {
           <Select
             placeholder={"Bộ lọc"}
             style={{ width: 150, marginLeft: "10px" }}
-            defaultValue={-2}
-            options={[{
-              value: -2,
-              label: "Tất Cả",
-            }, ...userStatus]}
+            defaultValue={null}
+            options={[
+              {
+                value: null,
+                label: "Tất Cả",
+              },
+              {
+                value: 1,
+                label: "Active",
+              },
+              {
+                value: 2,
+                label: "Inactive",
+              },
+            ]}
             onChange={(value) => {
-              // setUserStatus(value);
+              setStatus(value);
             }}
           />
         </Space>
@@ -356,19 +343,26 @@ const Films = () => {
         columns={columns}
         dataSource={datas}
         loading={loading}
-        pagination={{
-          pageSize: 10
-        }}
+        pagination={false}
+        scroll={{ x: 1300 }}
       />
+      <Space size="large">
+        <Pagination
+          showSizeChanger
+          onShowSizeChange={onShowSizeChange}
+          pageSizeOptions={[10, 20, 50]}
+          onChange={onChange}
+          defaultCurrent={1}
+          total={total}
+        />
+      </Space>
       <Modal
-        title={`${isEdit ? "Cập nhật tráng thái" : "Tạo"}  User`}
+        title={"Thông tin người dùng"}
         open={isModalOpen}
-        onOk={handleOk}
+        onOk={handleCancel}
         onCancel={handleCancel}
-        okText={`${isEdit ? "Cập nhật" : "Tạo"}`}
-        cancelText="Hủy"
         width="90%"
-        style={{ top: 20, height: "80vh" }}
+        style={{ top: 20 }}
         maskClosable={false}
       >
         <Form
@@ -395,8 +389,8 @@ const Films = () => {
               </Form.Item>
 
               <Form.Item
-                name="name"
-                label="Tên"
+                name="username"
+                label="Tên người dùng"
               >
                 <Input disabled/>
               </Form.Item>
@@ -407,21 +401,21 @@ const Films = () => {
                 <Input disabled/>
               </Form.Item>
 
-              <Form.Item name="status" label="Trạng thái">
+              <Form.Item name="active" label="Trạng thái">
                 <Select options={userStatus} disabled/>
               </Form.Item>
             </Col>
 
             <Col xl={12} md={12} xs={24}>
               <Form.Item
-                name="phoneNumber"
-                label="phoneNumber"
+                name="contact"
+                label="Số điện thoại"
               >
                 <Input disabled/>
               </Form.Item>
               <Form.Item
-                name="address"
-                label="address"
+                name="birthDay"
+                label="Ngày sinh"
               >
                 <Input disabled/>
               </Form.Item>
@@ -438,6 +432,20 @@ const Films = () => {
                   disabled
                 />
               </Form.Item>
+
+              <Form.Item
+                name="createdAt"
+                label="Ngày tạo"
+              >
+                <Input disabled/>
+              </Form.Item>
+
+              <Form.Item
+                name="updatedAt"
+                label="Ngày cập nhật	"
+              >
+                <Input disabled/>
+              </Form.Item>
             </Col>
           </Row>
         </Form>
@@ -446,4 +454,4 @@ const Films = () => {
   );
 };
 
-export default Films;
+export default Users;
