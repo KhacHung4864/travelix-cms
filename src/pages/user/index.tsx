@@ -119,18 +119,18 @@ const Users = () => {
     form.resetFields();
   };
 
-  const handleUpdateStatusUser = async (user_id: any, active: number) => {
+  const handleUpdateStatusUser = async (user_id: any, status: number) => {
     try {
       const data = await dispatch(
         requestUpdateUser({
           user_id,
-          active
+          status
         })
       );
       unwrapResult(data);
       loadAllUsers();
       notification.success({
-        message: "Xoá thành công",
+        message: "cập nhật Thành công",
         duration: 1.5,
       });
     } catch (error) {
@@ -346,7 +346,7 @@ const Users = () => {
         pagination={false}
         scroll={{ x: 1300 }}
       />
-      <Space size="large">
+      <Space size="large" style={{justifyContent: "end", marginTop: "16px", width: "100%"}}>
         <Pagination
           showSizeChanger
           onShowSizeChange={onShowSizeChange}
