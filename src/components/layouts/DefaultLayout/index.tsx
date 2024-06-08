@@ -107,7 +107,7 @@ const LayoutDefault = ({ children }: { children?: any }) => {
           <div className={cx("site-layout-background")}>{children}</div>
         </Content>
         <Footer style={{ textAlign: "center", padding: "20px" }}>
-          Cinema ©2023 Sản phẩm của Nhóm
+          Travelix ©2024 Sản phẩm của Nguyễn Khắc Hưng
         </Footer>
       </Layout>
     </Layout>
