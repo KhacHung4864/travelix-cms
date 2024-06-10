@@ -3,15 +3,15 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { Button, Col, Form, Image, Input, Modal, Pagination, Popconfirm, Row, Select, Space, Tag, Tooltip, Typography, notification } from "antd";
 import { useForm } from "antd/es/form/Form";
 import Table, { ColumnsType } from "antd/es/table";
+import { PaginationProps } from "antd/lib/pagination";
 import classNames from "classnames/bind";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserInfo } from "../../models/user";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import styles from "./users.module.scss";
 import { requestGetAllUser, requestUpdateUser, userState } from "./usersSlide";
-import moment from "moment";
-import { PaginationProps } from "antd/lib/pagination";
 
 const cx = classNames.bind(styles);
 
@@ -336,7 +336,7 @@ const Users = () => {
         </Space>
       </Space>
 
-      <Typography.Title level={3}>Danh Người dùng: </Typography.Title>
+      <Typography.Title level={3}>Danh Sách Người dùng: </Typography.Title>
 
       <Table
         className={cx("course__table")}
@@ -384,7 +384,7 @@ const Users = () => {
                 <Image
                   width={200}
                   src={`${valueEdit?.avatar}` || `${dataUpload}`}
-                  fallback="https://play-lh.googleusercontent.com/9N7f8PWb1zlDqOR4mepkNFkRt5SlrjFoLsg5jYtVhvq9LeQneLKyHg9eEx4BSgyl7F4"
+                  fallback="https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"
                 />
               </Form.Item>
 
