@@ -82,7 +82,7 @@ const Users = () => {
     return {
       key: `${value?.id || Math.random()}`,
       username: value?.username,
-      avatar: value?.avatar || "https://play-lh.googleusercontent.com/9N7f8PWb1zlDqOR4mepkNFkRt5SlrjFoLsg5jYtVhvq9LeQneLKyHg9eEx4BSgyl7F4",
+      avatar: value?.avatar || "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg",
       email: value?.email,
       active: value?.active,
       contact: value?.contact,
