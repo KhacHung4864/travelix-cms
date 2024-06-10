@@ -514,7 +514,7 @@ const PlacesPage = () => {
                   placeholder="Nhập mô tả ..."
                   style={{ minWidth: "100%" }}
                   showCount
-                  maxLength={300}
+                  maxLength={1000}
                 />
               </Form.Item>
             </Col>
